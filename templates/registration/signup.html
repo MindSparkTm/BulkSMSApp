@@ -1,0 +1,63 @@
+<!-- templates/account/signup.html -->
+{% extends 'registration/base.html' %}
+{% load category_tags %}
+{% block content %}
+
+    <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+                <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                <div class="col-lg-7">
+                    <div class="p-5">
+                        <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                            <ul class="errorlist">
+                                {% for key, value in form.errors.items %}
+                                    <li>{% if key != '__all__' %}<p>Errors</p>{% endif %}{{ value }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <form class="user" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group row">
+                                 <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <p>{{ form.email|addclass:'form-control' }}</p>
+                                </div>
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <p>{{ form.username|addclass:'form-control' }}</p>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <p>{{ form.password1|addclass:'form-control' }}</p>
+
+                                </div>
+                                <div class="col-sm-6">
+                                    <p>{{ form.password2|addclass:'form-control' }}</p>
+
+                                </div>
+                            </div>
+                            <input type="submit" class="btn btn-primary" name="Register"/>
+
+                            <hr>
+                            <a href="index.html" class="btn btn-google btn-user btn-block">
+                                <i class="fab fa-google fa-fw"></i> Register with Google
+                            </a>
+                        </form>
+                        <hr>
+                      <div class="text-center">
+                            <a class="small" href="{% url 'password_reset' %}">Forgot Password?</a>
+                        </div>
+                        <div class="text-center">
+                            <a class="small" href="{% url 'login' %}">Already have an account? Login!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
