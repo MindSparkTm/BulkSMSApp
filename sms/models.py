@@ -75,8 +75,11 @@ def trigger_only_when_fileupload_status_is_complete(sender,instance, **kwargs):
     else:
         if file_upload.status == FileUpload.COMPLETED:
             message_body = file_upload.failed_phone_numbers_list
-            #trigger email function here
-            send_email('Failed Phone Number List', message_body, 'smartsurajit2008@gmail.com',
+            if message_body:
+                send_email('Failed Phone Number List', message_body, 'smartsurajit2008@gmail.com',
                        ['smartsurajit2008@gmail.com', 'surajit@mumsvillage.com'])
+            else:
+                print('Completed without errors')
+    return
 
 post_save.connect(trigger_only_when_fileupload_status_is_complete, sender=FileUpload)
