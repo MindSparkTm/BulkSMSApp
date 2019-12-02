@@ -10,7 +10,7 @@ class MessageAdmin(admin.ModelAdmin):
 
 class FileUploadAdmin(admin.ModelAdmin):
 
-    list_display = ('description','document',)
+    list_display = ('description','document','status','failed_phone_numbers_list',)
 
 
 admin.site.register(Message,MessageAdmin)

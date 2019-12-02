@@ -3,6 +3,7 @@ from accounts.models import UserProfile
 # Create your models here.
 from django.db.models.signals import post_save,pre_save
 from .handler import parse_uploaded_file
+from .utils import send_email
 class Message(models.Model):
 
     status_response = (
@@ -35,16 +36,28 @@ class Message(models.Model):
         return u'{}{}'.format(self.user_profile.user.username,self.message_Id)
 
 class FileUpload(models.Model):
+    STARTED = 'ST'
+    IN_PROGRESS = 'IP'
+    COMPLETED = 'CD'
+    FAILED = 'FD'
+    upload_status = [
+        (STARTED,'STARTED'),
+        (IN_PROGRESS,'IN PROGRESS'),
+        (COMPLETED,'COMPLETED'),
+        (FAILED,'FAILED')
+    ]
     description = models.CharField(max_length=255, blank=True)
     document = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50,choices=upload_status,null=True,blank=True)
+    failed_phone_numbers_list = models.TextField(null=True,blank=True)
 
     class Meta:
         verbose_name = 'File Upload'
         verbose_name_plural = 'File Upload'
 
     def __str__(self):
-        return u'{}{}'.format(self.pk,self.description)
+        return u'{}{}{}'.format(self.pk,self.description,self.status)
 
 
 def save_profile(sender, instance,created, **kwargs):
@@ -54,3 +67,16 @@ def save_profile(sender, instance,created, **kwargs):
 
 post_save.connect(save_profile, sender=FileUpload)
 
+def trigger_only_when_fileupload_status_is_complete(sender,instance, **kwargs):
+    try:
+        file_upload = FileUpload.objects.get(id=instance.pk)
+    except:
+        print('File doesnot exist with that id')
+    else:
+        if file_upload.status == FileUpload.COMPLETED:
+            message_body = file_upload.failed_phone_numbers_list
+            #trigger email function here
+            send_email('Failed Phone Number List', message_body, 'smartsurajit2008@gmail.com',
+                       ['smartsurajit2008@gmail.com', 'surajit@mumsvillage.com'])
+
+post_save.connect(trigger_only_when_fileupload_status_is_complete, sender=FileUpload)

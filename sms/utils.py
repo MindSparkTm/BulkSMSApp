@@ -3,11 +3,12 @@ import africastalking
 from dotenv import load_dotenv
 import os
 from accounts.models import UserProfile
-from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
 
 def send_message(name,recipient_number):
     from .models import Message
     try:
+
         user_profile = UserProfile.objects.get(phone_number=recipient_number)
     except UserProfile.DoesNotExist:
         print('Phone Number Doesnot exist in Db', recipient_number)
@@ -44,3 +45,14 @@ def send_message(name,recipient_number):
         print(response['SMSMessageData']['Recipients'][0]['status'])
         print(response['SMSMessageData']['Recipients'][0]['messageId'])
         return str(response['SMSMessageData']['Recipients'][0]['statusCode'])
+
+def send_email(subject,message_body,sender_email,recipient_list):
+    return send_mail(
+        subject,
+        message_body,
+        sender_email,
+        recipient_list,
+        fail_silently=False,
+    )
+
+
